@@ -1,8 +1,6 @@
 package nattrn2;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 /**
  * Account.java
@@ -22,8 +20,21 @@ public class Account {
     private int accountId;
     private BigDecimal balance;
     private String accountType;
-
     private static final BigDecimal INTEREST_RATE = BigDecimal.valueOf(2.4);
+
+    /**
+     * Konstruktor Account.
+     *
+     * I denna uppgift kan endast ett sparkonto skapas,
+     * därför sätts kontotypen alltid till Sparkonto och saldot initieras till 0.
+     *
+     * @param accountId Kontots unika nummer.
+     * */
+    public Account(int accountId) {
+        this.accountId = accountId;
+        this.balance = BigDecimal.ZERO;
+        this.accountType = "Sparkonto";
+    }
 
     private BigDecimal getBalance() {
         return balance;
