@@ -23,11 +23,23 @@ public class Customer {
         return lastName;
     }
 
+    public int getPersonalNumber() {
+        return personalNumber;
+    }
+
+    public List<Integer> getAccountIds() {
+        return accountIds;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getCustomerInfo() {
+        return firstName + " " + lastName + " " + String.valueOf(getPersonalNumber()) + " " + getAccountIds().toString();
     }
 }
