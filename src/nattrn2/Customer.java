@@ -15,9 +15,9 @@ import java.util.List;
  * */
 
 public class Customer {
-    private String firstName;
-    private String lastName;
-    private int personalNumber;
+    private String name;
+    private String sirname;
+    private int pNo;
     private List<Integer> accountIds;
 
     /**
@@ -25,23 +25,23 @@ public class Customer {
      * Skapar en kund utan konton
      * Konton skapas och kopplas till kunden senare av BankLogic
      * */
-    public Customer (String firstName, String lastName, int personalNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.personalNumber = personalNumber;
+    public Customer (String name, String sirname, int pNo) {
+        this.name = name;
+        this.sirname = sirname;
+        this.pNo = pNo;
         this.accountIds = new ArrayList<>();
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getSirname() {
+        return sirname;
     }
 
-    public int getPersonalNumber() {
-        return personalNumber;
+    public int getPNo() {
+        return pNo;
     }
 
     public List<Integer> getAccountIds() {
@@ -49,13 +49,13 @@ public class Customer {
     }
 
     //Ändrar kundens förnamn
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     //Ändrar kundens efternamn
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setSirname(String sirname) {
+        this.sirname = sirname;
     }
 
     /**
@@ -64,6 +64,6 @@ public class Customer {
      *
      * */
     public String getCustomerInfo() {
-        return firstName + " " + lastName + " " + String.valueOf(getPersonalNumber()) + " " + getAccountIds().toString();
+        return name + " " + sirname + " " + String.valueOf(getPNo()) + " " + getAccountIds().toString();
     }
 }
