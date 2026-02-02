@@ -93,4 +93,36 @@ public class BankLogic {
             }
         } return null;
     }
+
+    /**
+     * Ändrar namn på kunden med angivet personnummer
+     *
+     * Metoden hämtar kunden med det angivna personnummmret
+     * Om för eller efternamn skickas in som tomma strängar så behålls det gamla värdet.
+     * Returnerar endast true om minst ett av namnet har ändrats.
+     *
+     * @param name Nytt förnamn på kunden, om tomt behålls det gamla namnet.
+     * @param surname Nytt efternamn på kunden, om tomt behålls det gamla namnet.
+     * @param pNo Personnummer på kunden.
+     * @return true Om minst ett av namnet ändrats, annars false.
+     * */
+    boolean changeCustomerName(String name, String surname, String pNo) {
+        for (Customer customer : customers) {
+            if (customer.getPNo().equals(pNo)) {
+                boolean changed = false;
+
+                if(!name.isEmpty()) {
+                    customer.setName(name);
+                    changed = true;
+                }
+
+                if(!surname.isEmpty()) {
+                    customer.setSurname(surname);
+                    changed = true;
+                }
+                return changed;
+            }
+        }
+        return false;
+    }
 }
