@@ -10,6 +10,7 @@ import java.util.Locale;
 public class BankLogic {
     private List<Customer> customers = new ArrayList<>();
     private HashMap<String, List<Account>> customerAccounts = new HashMap<>();
+    private int nextAccountId = 1001;
 
     public static void main(String[] args) {
 
@@ -124,5 +125,36 @@ public class BankLogic {
             }
         }
         return false;
+    }
+
+    /**
+     * Skapar ett nytt sparkonto för kund med angivet personnummer.
+     *
+     * Metoden loopar genom listan med kunder. Om kunden finns:
+     *  - Skapas ett nytt sparkonto med unikt ID.
+     *  - Kontot läggs till i kundens lista med konton HashMap customerAccounts.
+     *  - Kontonummret returneras
+     *  Om kunden inte finns returneras -1.
+     *
+     * @param pNo Personnummer på kunden
+     * @return KontoID för det nya sparkontot eller -1 om kunden inte finns.
+     * */
+    int createSavingsAccount(String pNo) {
+        for (Customer customer: customers) {
+            if (customer.getPNo().equals(pNo)) {
+                Account savingsAccount = new Account(nextAccountId);
+                nextAccountId ++;
+
+                List<Account> accounts = customerAccounts.get(pNo);
+                if(accounts == null) {
+                    accounts = new ArrayList<>();
+                    customerAccounts.put(pNo, accounts);
+                }
+
+                accounts.add(savingsAccount);
+                return savingsAccount.getAccountId();
+            }
+        }
+        return -1;
     }
 }
