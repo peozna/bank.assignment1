@@ -107,7 +107,7 @@ public class BankLogic {
      * @param pNo Personnummer på kunden.
      * @return true Om minst ett av namnet ändrats, annars false.
      * */
-    boolean changeCustomerName(String name, String surname, String pNo) {
+    public boolean changeCustomerName(String name, String surname, String pNo) {
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
                 boolean changed = false;
@@ -139,7 +139,7 @@ public class BankLogic {
      * @param pNo Personnummer på kunden
      * @return KontoID för det nya sparkontot eller -1 om kunden inte finns.
      * */
-    int createSavingsAccount(String pNo) {
+    public int createSavingsAccount(String pNo) {
         for (Customer customer: customers) {
             if (customer.getPNo().equals(pNo)) {
                 Account savingsAccount = new Account(nextAccountId);
@@ -176,7 +176,7 @@ public class BankLogic {
                     NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
                     String balanceString = nf.format(balance);
 
-                    BigDecimal interest = account.getInterest();
+                    BigDecimal interest = account.getInterestRate();
                     NumberFormat pf = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
                     pf.setMaximumFractionDigits(1);
                     String interestString = pf.format(interest);
@@ -234,5 +234,38 @@ public class BankLogic {
             }
         }
         return false;
+    }
+    /**
+     * String closeAccount(String pNo, int accountId)
+     * Avslutar ett konto och beräknar ränta enligt formeln:
+     *
+     * ränta = saldo * räntesats / 100
+     * Returnerar en sträng med kontoinformation där räntan anges i kronor:
+     *
+     * 1001 1 000,00 kr Sparkonto 24,00 kr
+     * Returnerar null om kontot inte kunde avslutas.
+     *
+     * Notering: Ränta läggs endast på vid avslutning av konto – årsskiften hanteras inte i denna version.
+     * */
+    public String closeAccount(String pNo, int accountId) {
+        List<Account> accounts = customerAccounts.get(pNo);
+
+        for (Account account : accounts) {
+            if (account.getAccountId() == accountId) {
+                BigDecimal balance = account.getBalance();
+                NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
+                String balanceString = nf.format(balance);
+
+                BigDecimal interestAmount = account.getInterest();
+                String interestString = nf.format(interestAmount);
+
+                String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " + account.getAccountType() + " " + interestString;
+
+                accounts.remove(account);
+
+                return accountInfo;
+            }
+        }
+        return null;
     }
 }
