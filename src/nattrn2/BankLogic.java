@@ -81,7 +81,7 @@ public class BankLogic {
                         NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
                         String balanceString = nf.format(balance);
 
-                        BigDecimal interest = account.getInterest();
+                        BigDecimal interest = account.getInterestRate();
                         NumberFormat pf = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
                         pf.setMaximumFractionDigits(1);
                         String interestString = pf.format(interest);
@@ -236,16 +236,17 @@ public class BankLogic {
         return false;
     }
     /**
-     * String closeAccount(String pNo, int accountId)
-     * Avslutar ett konto och beräknar ränta enligt formeln:
+     * Avslutar ett konto och beräknar räntan.
      *
-     * ränta = saldo * räntesats / 100
-     * Returnerar en sträng med kontoinformation där räntan anges i kronor:
+     * Metoden letar upp kontot med angivet accountId hos kunden pNo.
+     * Om kontot hittas så beräknas räntan med getInterest() enligt formeln:
+     *      ränta = saldo * räntesats / 2
+     * Den returneras sen i en Sträng tillsammans med övrig kontoinfo.
+     * Kontot tas sedan bort från listan.
      *
-     * 1001 1 000,00 kr Sparkonto 24,00 kr
-     * Returnerar null om kontot inte kunde avslutas.
-     *
-     * Notering: Ränta läggs endast på vid avslutning av konto – årsskiften hanteras inte i denna version.
+     * @param pNo kundens personnummer.
+     * @param accountId kontonummer.
+     * @return en Sträng med ränta och kontoinfo, eller null om kontot inte kunde avslutas.
      * */
     public String closeAccount(String pNo, int accountId) {
         List<Account> accounts = customerAccounts.get(pNo);
@@ -264,6 +265,47 @@ public class BankLogic {
                 accounts.remove(account);
 
                 return accountInfo;
+            }
+        }
+        return null;
+    }
+    /**
+     * Tar bort en kund och dess konton.
+     *
+     * Metoden letar upp kunden med angivet pNo.
+     * Om kunden hittas skapas en lista med information om kunden och dennes konto/n.
+     * Kundinfo och kontoinfo sätts ihop till strängar som placeras i listan.
+     *
+     * Sedan tas kunden och alla tillhörande konton bort.
+     *
+     * @param pNo Kundens personnummer.
+     * @return Lista med kund+kontoinformation eller null om kunden inte finns.
+     * */
+    public List<String> deleteCustomer(String pNo) {
+        for (Customer customer : customers) {
+            if (customer.getPNo().equals(pNo)) {
+                List<String> deleteCustomer = new ArrayList<>();
+
+                String customerInfo = customer.getPNo() + " " + customer.getName() + " ";
+                deleteCustomer.add(customerInfo);
+
+                List<Account> accounts = customerAccounts.get(pNo);
+                for (Account account : accounts) {
+                    BigDecimal balance = account.getBalance();
+                    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
+                    String balanceString = nf.format(balance);
+
+                    BigDecimal interestAmount = account.getInterest();
+                    String interestString = nf.format(interestAmount);
+
+                    String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " +
+                            account.getAccountType() + " " + interestString;
+
+                    deleteCustomer.add(accountInfo);
+                }
+                customerAccounts.remove(pNo);
+                customers.remove(customer);
+                return deleteCustomer;
             }
         }
         return null;
