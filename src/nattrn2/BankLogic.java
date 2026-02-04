@@ -157,4 +157,34 @@ public class BankLogic {
         }
         return -1;
     }
+    /**
+     * Returnerar information om ett konto som tillhör en specifik kund.
+     *
+     * Metoden söker efter kontot med angivet accountId med kundens personnummer.
+     * Om kunden och kontot hittas så returneras informationen som en sträng.
+     *
+     * @param pNo kundens personnummer
+     * @param accountId kontonummer
+     * @return Sträng med kontoinfo eller null om kontot eller kunden inte finns.
+     * */
+    public String getAccount(String pNo, int accountId) {
+            List<Account> accounts = customerAccounts.get(pNo);
+
+            for (Account account : accounts) {
+                if (account.getAccountId() == accountId) {
+                    BigDecimal balance = account.getBalance();
+                    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
+                    String balanceString = nf.format(balance);
+
+                    BigDecimal interest = account.getInterest();
+                    NumberFormat pf = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
+                    pf.setMaximumFractionDigits(1);
+                    String interestString = pf.format(interest);
+
+                    String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " + account.getAccountType() + " " + interestString;
+                    return accountInfo;
+                }
+            }
+        return null;
+    }
 }
