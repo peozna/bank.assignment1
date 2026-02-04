@@ -187,4 +187,52 @@ public class BankLogic {
             }
         return null;
     }
+    /**
+     * Sätter in ett belopp pengar på ett konto tillhörande en kund.
+     *
+     * Metoden letar upp kund som motsvarar pNo och konto som motsvarar accountId.
+     * Endast belopp större än 0 och heltal accepteras.
+     *
+     * @param pNo Kundens personnummer
+     * @param accountId Kontonummer
+     * @param amount Beloppet som ska sättas in.
+     * @return true om insättningen lyckades, annars false.
+     * */
+    public boolean deposit(String pNo, int accountId, int amount) {
+        List<Account> accounts = customerAccounts.get(pNo);
+
+        for (Account account : accounts) {
+            if (account.getAccountId() == accountId && amount > 0) {
+                account.makeDeposit(amount);
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Gör ett uttag från en kunds konto.
+     *
+     * Metoden söker upp konto med accountId för kunden med pNo.
+     * Uttaget genomförs endast om saldot täcker beloppet och beloppet är större än 0.
+     * Beloppet anges i heltal.
+     *
+     * @param pNo Kundens personnummer
+     * @param accountId Kontonummer
+     * @param amount Beloppet som ska tas ut.
+     * @return true om uttaget lyckades, annars false.
+     * */
+    public boolean withdraw(String pNo, int accountId, int amount) {
+        List<Account> accounts = customerAccounts.get(pNo);
+
+        for (Account account : accounts) {
+            if (account.getAccountId() == accountId) {
+                int balance = account.getBalance().intValue();
+                    if (balance >= amount && amount > 0) {
+                    account.withdraw(amount);
+                    return true;
+                    }
+            }
+        }
+        return false;
+    }
 }
