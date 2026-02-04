@@ -71,7 +71,7 @@ public class BankLogic {
 
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
-                String getCustomer = customer.getPNo() + " " + customer.getName() + " " + customer.getSurname() + " ";
+                String getCustomer = customer.getPNo() + " " + customer.getName() + " " + customer.getSurname();
                 customerInfo.add(getCustomer);
 
                 List<Account> accounts = customerAccounts.get(pNo);
@@ -286,7 +286,7 @@ public class BankLogic {
             if (customer.getPNo().equals(pNo)) {
                 List<String> deleteCustomer = new ArrayList<>();
 
-                String customerInfo = customer.getPNo() + " " + customer.getName() + " ";
+                String customerInfo = customer.getPNo() + " " + customer.getName() + " " + customer.getSurname();
                 deleteCustomer.add(customerInfo);
 
                 List<Account> accounts = customerAccounts.get(pNo);

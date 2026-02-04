@@ -20,7 +20,7 @@ public class Account {
     private int accountId;
     private BigDecimal balance;
     private String accountType;
-    private static final BigDecimal INTEREST_RATE = BigDecimal.valueOf(2.4);
+    private static final BigDecimal INTEREST_RATE = BigDecimal.valueOf(0.024);
 
     /**
      * Konstruktor Account.
@@ -36,11 +36,11 @@ public class Account {
         this.accountType = "Sparkonto";
     }
 
-    private BigDecimal getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    private String getAccountType() {
+    public String getAccountType() {
         return accountType;
     }
 
@@ -105,12 +105,12 @@ public class Account {
     /**
      * Beräkna ränta.
      *
-     * Metoden beräknar ränta genom att ta saldo * räntesats / 100 och avrundar till 2 decimaler.
+     * Metoden beräknar ränta genom att ta saldo * räntesats och avrundar till 2 decimaler.
      *
      * @return interest räntan för kontot.
      * */
     public BigDecimal getInterest() {
-        BigDecimal interest = (balance.multiply(INTEREST_RATE)).divide(BigDecimal.valueOf(100)).setScale(2,
+        BigDecimal interest = (balance.multiply(INTEREST_RATE)).setScale(2,
                 RoundingMode.HALF_UP);
         return interest;
     }
