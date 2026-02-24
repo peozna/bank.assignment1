@@ -1,6 +1,7 @@
 package nattrn2;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 /**
  * Account.java
@@ -16,11 +17,11 @@ import java.math.RoundingMode;
  * Användarnamn: nattrn-2
  * */
 
-public class Account {
+abstract class Account {
     private int accountId;
     private BigDecimal balance;
-    private String accountType;
-    private static final BigDecimal INTEREST_RATE = BigDecimal.valueOf(0.024);
+    private List <Transaction> transactions;
+    protected String accountType;
 
     /**
      * Konstruktor Account.
@@ -33,23 +34,14 @@ public class Account {
     public Account(int accountId) {
         this.accountId = accountId;
         this.balance = BigDecimal.ZERO;
-        this.accountType = "Sparkonto";
     }
 
     public BigDecimal getBalance() {
         return balance;
     }
 
-    public String getAccountType() {
-        return accountType;
-    }
-
     public int getAccountId() {
         return accountId;
-    }
-
-    public BigDecimal getInterestRate() {
-        return INTEREST_RATE;
     }
 
     /**
@@ -66,6 +58,7 @@ public class Account {
     public boolean makeDeposit(int amount) {
         if (amount <= 0) return false;
 
+        //Amount omvandlas till BigDecimal för att matcha saldots datatyp
         balance = balance.add(BigDecimal.valueOf(amount));
         return true;
     }
@@ -81,12 +74,10 @@ public class Account {
      * @return true om beloppet är giltigt, false om beloppet är ogiltigt.
      *
      */
-    public boolean withdraw(int amount) {
-        if (amount <= 0) return false;
-        if (BigDecimal.valueOf(amount).compareTo(balance) > 0) return false;
+    public abstract boolean withdraw(int amount);
 
-        balance = balance.subtract(BigDecimal.valueOf(amount));
-        return true;
+    protected void updateBalance(BigDecimal totalAmount) {
+            balance = balance.add(totalAmount);
     }
 
     /**
@@ -98,8 +89,10 @@ public class Account {
      * @return Kontoinformation som sträng
      */
     public String getAccountInfo() {
-        return getAccountId() + " " + getBalance().toString() + " " + getInterest().toString()
-        + getAccountType();
+        //Returnerar oformatterad kontoinformation
+        //BankLogic hanterar formattering
+        return getAccountId() + " " + getBalance().toString() + " " + getInterest().toString() + " " +
+        getAccountType();
      }
 
     /**
@@ -109,9 +102,5 @@ public class Account {
      *
      * @return interest räntan för kontot.
      * */
-    public BigDecimal getInterest() {
-        BigDecimal interest = (balance.multiply(INTEREST_RATE)).setScale(2,
-                RoundingMode.HALF_UP);
-        return interest;
-    }
+    public abstract BigDecimal calculateClosingInterest();
 }
