@@ -1,6 +1,7 @@
 package nattrn2;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * CreditAccount.java
@@ -18,6 +19,15 @@ public class CreditAccount extends Account {
     public CreditAccount (int accountId) {
         super(accountId);
         accountType = "Kreditkonto";
+    }
+
+    public BigDecimal calculateClosingInterest() {
+        BigDecimal balance = getBalance();
+
+        if (balance.compareTo(BigDecimal.ZERO) < 0) {
+            return balance.multiply(negativeBalanceInterest).setScale(2, RoundingMode.HALF_UP);
+        }
+        return balance.multiply(positiveBalanceInterest).setScale(2, RoundingMode.HALF_UP);
     }
 
     public boolean withdraw(int amount) {
