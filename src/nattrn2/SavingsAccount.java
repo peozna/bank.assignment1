@@ -20,6 +20,12 @@ public class SavingsAccount extends Account {
         accountType = "Sparkonto";
     }
 
+    @Override
+    public BigDecimal getInterestRate() {
+        return INTEREST_RATE;
+    }
+
+    @Override
     public BigDecimal calculateClosingInterest() {
         BigDecimal interest = (getBalance().multiply(INTEREST_RATE)).setScale(2,
                 RoundingMode.HALF_UP);
@@ -53,4 +59,4 @@ public class SavingsAccount extends Account {
             return false;
         }
     }
-}
+

@@ -21,6 +21,16 @@ public class CreditAccount extends Account {
         accountType = "Kreditkonto";
     }
 
+    @Override
+    public BigDecimal getInterestRate() {
+        BigDecimal balance = getBalance();
+        if (balance.compareTo(BigDecimal.ZERO) < 0) {
+            return negativeBalanceInterest;
+        }
+        return positiveBalanceInterest;
+    }
+
+    @Override
     public BigDecimal calculateClosingInterest() {
         BigDecimal balance = getBalance();
 
@@ -30,6 +40,7 @@ public class CreditAccount extends Account {
         return balance.multiply(positiveBalanceInterest).setScale(2, RoundingMode.HALF_UP);
     }
 
+    @Override
     public boolean withdraw(int amount) {
         if (amount <= 0) return false;
         BigDecimal balance = getBalance();
@@ -38,6 +49,7 @@ public class CreditAccount extends Account {
 
         if (futureBalance.compareTo(creditLimit) >= 0){
             updateBalance(withdrawAmount.negate());
+            //registrera transaktion
             return true;
         }
         return false;

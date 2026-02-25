@@ -16,8 +16,8 @@ import java.util.List;
 
 public class Customer {
     private String name;
-    private String sirname;
-    private int pNo;
+    private String surname;
+    private String pNo;
     private List<Integer> accountIds;
 
     /**
@@ -25,9 +25,9 @@ public class Customer {
      * Skapar en kund utan konton
      * Konton skapas och kopplas till kunden senare av BankLogic
      * */
-    public Customer (String name, String sirname, int pNo) {
+    public Customer (String name, String surname, String pNo) {
         this.name = name;
-        this.sirname = sirname;
+        this.surname = surname;
         this.pNo = pNo;
         this.accountIds = new ArrayList<>();
     }
@@ -36,11 +36,11 @@ public class Customer {
         return name;
     }
 
-    public String getSirname() {
-        return sirname;
+    public String getSurname() {
+        return surname;
     }
 
-    public int getPNo() {
+    public String getPNo() {
         return pNo;
     }
 
@@ -54,8 +54,8 @@ public class Customer {
     }
 
     //Ändrar kundens efternamn
-    public void setSirname(String sirname) {
-        this.sirname = sirname;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     /**
@@ -64,6 +64,6 @@ public class Customer {
      *
      * */
     public String getCustomerInfo() {
-        return name + " " + sirname + " " + String.valueOf(getPNo()) + " " + getAccountIds().toString();
+        return name + " " + surname + " " + pNo + " " + getAccountIds().toString();
     }
 }

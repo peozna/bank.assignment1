@@ -1,7 +1,11 @@
 package nattrn2;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
+import java.text.NumberFormat;
+
 
 /**
  * Account.java
@@ -42,6 +46,27 @@ abstract class Account {
 
     public int getAccountId() {
         return accountId;
+    }
+
+    public String getAccountType() {return accountType;}
+
+    public abstract BigDecimal getInterestRate();
+
+    //Formatteringsmetoder
+    private String formatBalance() {
+        NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("sv", "SE"));
+        return nf.format(balance);
+    }
+
+    private String formatInterestRate(BigDecimal rate) {
+        NumberFormat pf = NumberFormat.getPercentInstance(Locale.of("sv", "SE"));
+        pf.setMaximumFractionDigits(1);
+        return pf.format(rate);
+    }
+
+    private String formatMoney(BigDecimal amount) {
+        NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("sv", "SE"));
+        return nf.format(amount);
     }
 
     /**
@@ -89,11 +114,18 @@ abstract class Account {
      * @return Kontoinformation som sträng
      */
     public String getAccountInfo() {
-        //Returnerar oformatterad kontoinformation
-        //BankLogic hanterar formattering
-        return getAccountId() + " " + getBalance().toString() + " " + getInterest().toString() + " " +
-        getAccountType();
+        return accountId + " " +
+                formatBalance() + " " +
+                accountType + " " +
+                formatInterestRate(getInterestRate());
      }
+
+    public String getAccountInfoOnClose() {
+        return accountId + " " +
+                formatBalance() + " " +
+                accountType + " " +
+                formatMoney(calculateClosingInterest());
+    }
 
     /**
      * Beräkna ränta.

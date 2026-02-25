@@ -7,9 +7,30 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Locale;
 
+/**
+ * BankLogic.java
+ *
+ * Hanterar all affärslogik. Ansvarar för att hantera kunder och deras konton.
+ * Agerar mellanlager mellan Account, Customer och användargränssnitt.
+ *
+ * Logik:
+ * Skapa, hämta och ta bort kunder
+ * Skapa, ta bort och hämta konton.
+ * Insättningar och uttag.
+ * Ränteberäkning vid kontoavslut - kundavslut.
+ *
+ * @author Nathalie Törnkvist
+ * Användarnamn: nattrn-2
+ * */
+
 public class BankLogic {
+    //Lista med alla bankens kunder
     private List<Customer> customers = new ArrayList<>();
+
+    //Kopplar kundens personnummer till dennes konto/n
     private HashMap<String, List<Account>> customerAccounts = new HashMap<>();
+
+    //Räknare för att säkerställa unika kontonummer
     private int nextAccountId = 1001;
 
     public static void main(String[] args) {
@@ -74,21 +95,12 @@ public class BankLogic {
                 String getCustomer = customer.getPNo() + " " + customer.getName() + " " + customer.getSurname();
                 customerInfo.add(getCustomer);
 
+                //Hämtar kundens kontolista via pNo
                 List<Account> accounts = customerAccounts.get(pNo);
 
+                    //Saldo och ränta formatteras här
                     for (Account account: accounts) {
-                        BigDecimal balance = account.getBalance();
-                        NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
-                        String balanceString = nf.format(balance);
-
-                        BigDecimal interest = account.getInterestRate();
-                        NumberFormat pf = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
-                        pf.setMaximumFractionDigits(1);
-                        String interestString = pf.format(interest);
-
-                        String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " + account.getAccountType() + " " + interestString;
-
-                        customerInfo.add(accountInfo);
+                        customerInfo.add(account.getAccountInfo());
                     }
                 return customerInfo;
             }
@@ -110,6 +122,7 @@ public class BankLogic {
     public boolean changeCustomerName(String name, String surname, String pNo) {
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
+                //Flagga för att säkerställa att metoden endast returnerar true om ett av namnen ändrats.
                 boolean changed = false;
 
                 if(!name.isEmpty()) {
@@ -142,10 +155,11 @@ public class BankLogic {
     public int createSavingsAccount(String pNo) {
         for (Customer customer: customers) {
             if (customer.getPNo().equals(pNo)) {
-                Account savingsAccount = new Account(nextAccountId);
+                Account savingsAccount = new SavingsAccount(nextAccountId);
                 nextAccountId ++;
 
                 List<Account> accounts = customerAccounts.get(pNo);
+                //Om kunden inte har en kontolista så skapas en (ska normalt inte ske)
                 if(accounts == null) {
                     accounts = new ArrayList<>();
                     customerAccounts.put(pNo, accounts);
@@ -153,6 +167,26 @@ public class BankLogic {
 
                 accounts.add(savingsAccount);
                 return savingsAccount.getAccountId();
+            }
+        }
+        return -1;
+    }
+
+    public int createCreditAccount(String pNo) {
+        for (Customer customer: customers) {
+            if (customer.getPNo().equals(pNo)) {
+                Account creditAccount = new CreditAccount(nextAccountId);
+                nextAccountId ++;
+
+                List<Account> accounts = customerAccounts.get(pNo);
+                //Om kunden inte har en kontolista så skapas en (ska normalt inte ske)
+                if(accounts == null) {
+                    accounts = new ArrayList<>();
+                    customerAccounts.put(pNo, accounts);
+                }
+
+                accounts.add(creditAccount);
+                return creditAccount.getAccountId();
             }
         }
         return -1;
@@ -168,21 +202,13 @@ public class BankLogic {
      * @return Sträng med kontoinfo eller null om kontot eller kunden inte finns.
      * */
     public String getAccount(String pNo, int accountId) {
+            //Förutsätter att kunden existerar och har en kontolista
+            //om kunends pNo inte finns så returneras null i slutet av metoden
             List<Account> accounts = customerAccounts.get(pNo);
 
             for (Account account : accounts) {
                 if (account.getAccountId() == accountId) {
-                    BigDecimal balance = account.getBalance();
-                    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
-                    String balanceString = nf.format(balance);
-
-                    BigDecimal interest = account.getInterestRate();
-                    NumberFormat pf = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
-                    pf.setMaximumFractionDigits(1);
-                    String interestString = pf.format(interest);
-
-                    String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " + account.getAccountType() + " " + interestString;
-                    return accountInfo;
+                    return account.getAccountInfo();
                 }
             }
         return null;
@@ -226,6 +252,7 @@ public class BankLogic {
 
         for (Account account : accounts) {
             if (account.getAccountId() == accountId) {
+                //Balance omvandlas till int för att belopp anges i heltal
                 int balance = account.getBalance().intValue();
                     if (balance >= amount && amount > 0) {
                     account.withdraw(amount);
@@ -253,17 +280,8 @@ public class BankLogic {
 
         for (Account account : accounts) {
             if (account.getAccountId() == accountId) {
-                BigDecimal balance = account.getBalance();
-                NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
-                String balanceString = nf.format(balance);
-
-                BigDecimal interestAmount = account.getInterest();
-                String interestString = nf.format(interestAmount);
-
-                String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " + account.getAccountType() + " " + interestString;
-
+                String accountInfo = account.getAccountInfoOnClose();
                 accounts.remove(account);
-
                 return accountInfo;
             }
         }
@@ -284,6 +302,7 @@ public class BankLogic {
     public List<String> deleteCustomer(String pNo) {
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
+                //Kundens knotoinformation samlas i en lista
                 List<String> deleteCustomer = new ArrayList<>();
 
                 String customerInfo = customer.getPNo() + " " + customer.getName() + " " + customer.getSurname();
@@ -291,18 +310,9 @@ public class BankLogic {
 
                 List<Account> accounts = customerAccounts.get(pNo);
                 for (Account account : accounts) {
-                    BigDecimal balance = account.getBalance();
-                    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE"));
-                    String balanceString = nf.format(balance);
-
-                    BigDecimal interestAmount = account.getInterest();
-                    String interestString = nf.format(interestAmount);
-
-                    String accountInfo = String.valueOf(account.getAccountId()) + " " + balanceString + " " +
-                            account.getAccountType() + " " + interestString;
-
-                    deleteCustomer.add(accountInfo);
+                    deleteCustomer.add(account.getAccountInfoOnClose());
                 }
+                //Kunden tas bort både från kundlistan och HashMapen
                 customerAccounts.remove(pNo);
                 customers.remove(customer);
                 return deleteCustomer;
