@@ -227,6 +227,8 @@ public class BankLogic {
     public boolean deposit(String pNo, int accountId, int amount) {
         List<Account> accounts = customerAccounts.get(pNo);
 
+        if (accounts == null) return false;
+
         for (Account account : accounts) {
             if (account.getAccountId() == accountId && amount > 0) {
                 account.makeDeposit(amount);
@@ -250,17 +252,14 @@ public class BankLogic {
     public boolean withdraw(String pNo, int accountId, int amount) {
         List<Account> accounts = customerAccounts.get(pNo);
 
-        for (Account account : accounts) {
-            if (account.getAccountId() == accountId) {
-                //Balance omvandlas till int för att belopp anges i heltal
-                int balance = account.getBalance().intValue();
-                    if (balance >= amount && amount > 0) {
-                    account.withdraw(amount);
-                    return true;
-                    }
+        if (accounts == null) return false;
+
+            for (Account account : accounts) {
+                if (account.getAccountId() == accountId) {
+                    return account.withdraw(amount);
             }
         }
-        return false;
+            return false;
     }
     /**
      * Avslutar ett konto och beräknar räntan.

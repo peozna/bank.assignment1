@@ -2,6 +2,7 @@ package nattrn2;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.text.NumberFormat;
@@ -24,7 +25,7 @@ import java.text.NumberFormat;
 abstract class Account {
     private int accountId;
     private BigDecimal balance;
-    private List <Transaction> transactions;
+    protected List <Transaction> transactions = new ArrayList<>();
     protected String accountType;
 
     /**

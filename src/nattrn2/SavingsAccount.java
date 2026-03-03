@@ -41,7 +41,8 @@ public class SavingsAccount extends Account {
             if (withdrawAmount.compareTo(balance) <= 0) {
                 updateBalance(withdrawAmount.negate());
                 freeWithdrawalUsed = true;
-                //registrera transaktion
+                Transaction newTransaction = new Transaction(withdrawAmount.negate(), getBalance());
+                transactions.add(newTransaction);
                 return true;
             }
             else {
@@ -52,7 +53,8 @@ public class SavingsAccount extends Account {
             BigDecimal totalAmount = withdrawAmount.add((fee));
             if (totalAmount.compareTo(balance) <= 0) {
                 updateBalance(totalAmount.negate());
-                //REGISTRERA TRANSAKTION
+                Transaction newTransaction = new Transaction(totalAmount.negate(), getBalance());
+                transactions.add(newTransaction);
                 return true;
             }
 

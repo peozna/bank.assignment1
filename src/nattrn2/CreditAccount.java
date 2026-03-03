@@ -49,7 +49,10 @@ public class CreditAccount extends Account {
 
         if (futureBalance.compareTo(creditLimit) >= 0){
             updateBalance(withdrawAmount.negate());
-            //registrera transaktion
+
+            int transactionAmount = withdrawAmount.negate().intValue();
+            Transaction newTransaction = new Transaction(withdrawAmount.negate(), getBalance());
+            transactions.add(newTransaction);
             return true;
         }
         return false;
