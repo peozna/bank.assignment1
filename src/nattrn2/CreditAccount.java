@@ -6,14 +6,20 @@ import java.math.RoundingMode;
 /**
  * CreditAccount.java
  *
+ * Representerar ett kreditkonto i banken.
+ * Ett kreditkonto kan ha ett negativt saldo ner till en viss gräns.
+ * Räntan kan vara positiv eller negativ.
  *
  * @author Nathalie Törnkvist
  * Användarnamn: nattrn-2
  * */
 
 public class CreditAccount extends Account {
+    //Kreditgränsen för kontot
     BigDecimal creditLimit = BigDecimal.valueOf(-5000);
+    //Ränta när kontots saldo är positivt
     private BigDecimal positiveBalanceInterest = BigDecimal.valueOf(0.011);
+    //Ränta när kontots saldo är negativt
     private BigDecimal negativeBalanceInterest = BigDecimal.valueOf(0.05);
 
     public CreditAccount (int accountId) {
@@ -21,6 +27,11 @@ public class CreditAccount extends Account {
         accountType = "Kreditkonto";
     }
 
+    /**
+     * Hämtar räntesatsen för kontot beroende på aktuellt saldo.
+     *
+     * @return räntan för kontot
+     */
     @Override
     public BigDecimal getInterestRate() {
         BigDecimal balance = getBalance();
@@ -30,6 +41,11 @@ public class CreditAccount extends Account {
         return positiveBalanceInterest;
     }
 
+    /**
+     * Beräknar räntan som ska betalas eller erhållas när kontot avslutas.
+     *
+     * @return räntan baserad på aktuellt saldo
+     */
     @Override
     public BigDecimal calculateClosingInterest() {
         BigDecimal balance = getBalance();
@@ -40,6 +56,13 @@ public class CreditAccount extends Account {
         return balance.multiply(positiveBalanceInterest).setScale(2, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Tar ut pengar från kreditkontot.
+     * Uttaget tillåts endast om det nya saldot inte överskrider kreditgränsen.
+     *
+     * @param amount beloppet som ska tas ut
+     * @return true om uttaget lyckades, annars false
+     */
     @Override
     public boolean withdraw(int amount) {
         if (amount <= 0) return false;

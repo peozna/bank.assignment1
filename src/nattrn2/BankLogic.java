@@ -36,6 +36,28 @@ public class BankLogic {
     public static void main(String[] args) {
 
     }
+
+    /**
+     * Hämtar alla transaktioner för ett specifikt konto.
+     *
+     * @param pNo kundens personnummer
+     * @param accountId kontonumret för kontot vars transaktioner ska hämtas.
+     * @return en lista med kontots formaterade transaktioner, null om kunden inte finns eller kontot inte tillhör kunden.
+     *
+     * */
+    public List<String> getTransactions(String pNo, int accountId) {
+        List<Account> accounts = customerAccounts.get(pNo);
+
+        if (accounts == null) return null;
+
+        for (Account account : accounts) {
+            if (account.getAccountId() == accountId) {
+                return account.formattedTransactions();
+            }
+        }
+        return null;
+    }
+
     /**
      * Metoden returnerar en lista med strängar som representeras bankens kunder.
      * Om inga kunder finns returneras en tom lista.
@@ -172,6 +194,18 @@ public class BankLogic {
         return -1;
     }
 
+    /**
+     * Skapar ett nytt kreditkonto för kund med angivet personnummer.
+     *
+     * Metoden loopar genom listan med kunder. Om kunden finns:
+     *  - Skapas ett nytt kreditkonto med unikt ID.
+     *  - Kontot läggs till i kundens lista med konton HashMap customerAccounts.
+     *  - Kontonummret returneras
+     *  Om kunden inte finns returneras -1.
+     *
+     * @param pNo Personnummer på kunden
+     * @return KontoID för det nya kreditkontot eller -1 om kunden inte finns.
+     * */
     public int createCreditAccount(String pNo) {
         for (Customer customer: customers) {
             if (customer.getPNo().equals(pNo)) {
@@ -205,6 +239,8 @@ public class BankLogic {
             //Förutsätter att kunden existerar och har en kontolista
             //om kunends pNo inte finns så returneras null i slutet av metoden
             List<Account> accounts = customerAccounts.get(pNo);
+
+            if (accounts == null) return null;
 
             for (Account account : accounts) {
                 if (account.getAccountId() == accountId) {
@@ -276,6 +312,8 @@ public class BankLogic {
      * */
     public String closeAccount(String pNo, int accountId) {
         List<Account> accounts = customerAccounts.get(pNo);
+
+        if (accounts == null) return null;
 
         for (Account account : accounts) {
             if (account.getAccountId() == accountId) {

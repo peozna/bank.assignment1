@@ -84,8 +84,12 @@ abstract class Account {
     public boolean makeDeposit(int amount) {
         if (amount <= 0) return false;
 
-        //Amount omvandlas till BigDecimal för att matcha saldots datatyp
-        balance = balance.add(BigDecimal.valueOf(amount));
+        BigDecimal depositAmount = BigDecimal.valueOf(amount);
+        balance = balance.add(depositAmount);
+
+        Transaction transaction = new Transaction(depositAmount, getBalance());
+        transactions.add(transaction);
+
         return true;
     }
 
@@ -121,6 +125,12 @@ abstract class Account {
                 formatInterestRate(getInterestRate());
      }
 
+    /**
+     * Returnerar kontoinformation när kontot stängs.
+     * Informationen innehåller kontonummer, saldo, kontotyp samt räntan som beräknas vid stängning av kontot.
+     *
+     * @return en formaterad sträng med kontots information
+     */
     public String getAccountInfoOnClose() {
         return accountId + " " +
                 formatBalance() + " " +
@@ -129,11 +139,26 @@ abstract class Account {
     }
 
     /**
+     * Hämtar alla transaktioner för kontot i formaterad text.
+     *
+     * @return en lista med strängar där varje element representerar
+     *         en formaterad transaktion
+     */
+    public List<String> formattedTransactions() {
+        List<String> formattedTransactions = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            formattedTransactions.add(transaction.getTransaction());
+        }
+        return formattedTransactions;
+    }
+
+    /**
      * Beräkna ränta.
      *
-     * Metoden beräknar ränta genom att ta saldo * räntesats och avrundar till 2 decimaler.
-     *
-     * @return interest räntan för kontot.
+     * Metoden beräknar ränta genom att ta kalla på metoden calculateClosingInterest.
      * */
     public abstract BigDecimal calculateClosingInterest();
+
 }
+
+
