@@ -30,6 +30,7 @@ public class BankGUI {
 
     public BankGUI(){
         bank = new BankLogic();
+        TestData.setupBank(bank);
         createGUI();
     }
 
@@ -67,14 +68,16 @@ public class BankGUI {
     private void createCustomerList() {
         customerModel = new DefaultListModel<>();
         customerList = new JList<>(customerModel);
+        selectedAccountId = 0;
 
         leftPanel.add(new JScrollPane(customerList), BorderLayout.CENTER);
 
         updateCustomerList();
 
         customerList.addListSelectionListener(e -> {
+            String selected = customerList.getSelectedValue();
                 if (!e.getValueIsAdjusting()) {
-                    selectedPNo = customerList.getSelectedValue();
+                    selectedPNo = selected.split(" ")[0];
 
                     updateAccountList(selectedPNo);
         }}
@@ -177,10 +180,6 @@ public class BankGUI {
                 return;
             }
 
-            if (selectedAccountId == 0) {
-                JOptionPane.showMessageDialog(frame, "Select an account first");
-                return;
-            }
             java.util.List<String> info = bank.deleteCustomer(selectedPNo);
 
             // Visar all information
