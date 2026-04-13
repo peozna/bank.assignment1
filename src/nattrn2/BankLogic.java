@@ -249,6 +249,21 @@ public class BankLogic {
             }
         return null;
     }
+
+    public List<String> getCustomerAccounts(String pNo) {
+
+        List<String> result = new ArrayList<>();
+
+        List<Account> accounts = customerAccounts.get(pNo);
+
+        if (accounts == null) return result;
+
+        for (Account acc : accounts) {
+            result.add(acc.getAccountInfo());
+        }
+
+        return result;
+    }
     /**
      * Sätter in ett belopp pengar på ett konto tillhörande en kund.
      *
