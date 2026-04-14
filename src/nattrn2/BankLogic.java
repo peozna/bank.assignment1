@@ -251,7 +251,6 @@ public class BankLogic {
     }
 
     public List<String> getCustomerAccounts(String pNo) {
-
         List<String> result = new ArrayList<>();
 
         List<Account> accounts = customerAccounts.get(pNo);

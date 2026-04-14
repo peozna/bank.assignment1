@@ -59,6 +59,7 @@ public class BankGUI {
         leftPanel = new JPanel(new BorderLayout());
         middlePanel = new JPanel(new BorderLayout());
         rightPanel = new JPanel();
+        rightPanel.setLayout(new GridLayout(5, 1));
 
         frame.add(leftPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
@@ -75,12 +76,15 @@ public class BankGUI {
         updateCustomerList();
 
         customerList.addListSelectionListener(e -> {
-            String selected = customerList.getSelectedValue();
-                if (!e.getValueIsAdjusting()) {
-                    selectedPNo = selected.split(" ")[0];
+            if (e.getValueIsAdjusting()) return;
 
-                    updateAccountList(selectedPNo);
-        }}
+            String selected = customerList.getSelectedValue();
+            if (selected == null) return;
+
+            selectedPNo = selected.split(" ")[0];
+            updateAccountList(selectedPNo);
+
+                }
         );
     }
 
@@ -91,16 +95,20 @@ public class BankGUI {
         middlePanel.add(new JScrollPane(accountList), BorderLayout.CENTER);
 
         accountList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                String selected = accountList.getSelectedValue();
+            if (e.getValueIsAdjusting()) return;
 
-                if(selected != null) {
-                    String[] parts = selected.split(" ");
-                    selectedAccountId = Integer.parseInt(parts[1]);
-                }
+            String selected = accountList.getSelectedValue();
+            if (selected == null) return;
+
+            try {
+                String[] parts = selected.split(" ");
+                selectedAccountId = Integer.parseInt(parts[0]); // oftast konto-id är första
+            } catch (Exception ex) {
+                System.out.println("Fel format på konto: " + selected);
             }}
         );
     }
+
 
     private void createButtons() {
         JButton depositButton = new JButton("Deposit money");
@@ -108,12 +116,15 @@ public class BankGUI {
         JButton closeAccountButton = new JButton("Close account");
         JButton deleteCustomerButton = new JButton("Delete customer");
         JTextField amountField = new JTextField(10);
+        JLabel amountLabel = new JLabel("Amount: ");
 
         rightPanel.add(depositButton);
         rightPanel.add(withdrawButton);
         rightPanel.add(closeAccountButton);
         rightPanel.add(deleteCustomerButton);
+        rightPanel.add(amountLabel);
         rightPanel.add(amountField);
+
 
         depositButton.addActionListener(e -> {
             int amount = Integer.parseInt(amountField.getText());
@@ -204,15 +215,19 @@ public class BankGUI {
     }
 
     private void updateAccountList(String pNo) {
-        if (pNo == null) return;
-
-        accountModel.clear();
+        DefaultListModel<String> newModel = new DefaultListModel<>();
 
         List<String> accounts = bank.getCustomerAccounts(pNo);
 
         for (String a : accounts) {
-            accountModel.addElement(a);
+            System.out.println("KONTO: [" + a + "]");
+            newModel.addElement(a);
         }
+
+        accountList.setModel(newModel);
+
+        accountList.revalidate();
+        accountList.repaint();
     }
 
     private void createMenu() {
