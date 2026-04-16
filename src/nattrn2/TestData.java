@@ -1,5 +1,16 @@
 package nattrn2;
 
+/**
+ * TestData.java
+ *
+ * Denna klass innehåller testdata för att direkt kunna testa BankGUI.java.
+ *
+ * Klassen skapar tre kunder med tillhörande konton.
+ *
+ * @author Nathalie Törnkvist
+ * Användarnamn: nattrn-2
+ * */
+
 public class TestData {
 
     public static void setupBank (BankLogic bank) {
@@ -17,10 +28,5 @@ public class TestData {
 
         // Skapa konton för Lisa
         int acc4 = bank.createCreditAccount("920303-1111");
-
-        // 💰 5. (valfritt) sätt in pengar så du kan testa direkt
-        bank.deposit("850101-1234", acc1, 1000);
-        bank.deposit("850101-1234", acc2, 500);
-        bank.deposit("900202-5678", acc3, 2000);
     }
 }

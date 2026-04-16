@@ -1,0 +1,17 @@
+PROGRAM: Bank GUI
+NAMN: Nathalie Törnkvist
+ANVÄNDARNAMN: nattrn-2
+
+Programmet startas genom att köra klassen BankGUI.java som innehåller main metoden.
+
+Vid uppstart läggs testdata automatiskt till via klassen TestData.java. Den skapar kunder och konton
+så att programmet kan testas direkt.
+
+Funktionalitet:
+Programmet visar alla kunder, när du trycker på en kund så ser du kundens konton.
+Du kan ta bort kunder och konton med knapparna i högra panelen.
+Du kan sätta in och ta ut perngar från ett valt konto med hjälp av deposit och withdraw knapparna,
+du behöver fylla i textfältet med en summa innan du trycker på knappen.
+
+Programmet har en meny ARCHIVE. Tryck på den så ser du menyn med knapparna Save bank, Load bank
+och Save transaction. Dessa knappar har ingen funktionalitet än.
