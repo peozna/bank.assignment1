@@ -60,7 +60,7 @@ public class BankGUI {
      *
      * */
     public static void main(String[] args) {
-        new BankGUI();
+        SwingUtilities.invokeLater(() -> new BankGUI());
     }
 
     /**
@@ -182,7 +182,13 @@ public class BankGUI {
 
         //Insättning
         depositButton.addActionListener(e -> {
-            int amount = Integer.parseInt(amountField.getText());
+            int amount = 0;
+            try {
+                amount = Integer.parseInt(amountField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Enter valid number");
+                return;
+            }
 
             //Kontroll att kund och konto är valda.
             if (selectedPNo == null) {
@@ -203,11 +209,17 @@ public class BankGUI {
                 JOptionPane.showMessageDialog(frame, "Error");
             }
             updateAccountList(selectedPNo); //Uppdaterar saldo
+            amountField.setText(" ");
         });
 
         //Uttag
         withdrawButton.addActionListener(e -> {
-            int amount = Integer.parseInt(amountField.getText());
+            int amount = 0;
+            try {
+                amount = Integer.parseInt(amountField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Enter valid number");
+            }
 
             if (selectedPNo == null) {
                 JOptionPane.showMessageDialog(frame, "Select a customer first");
@@ -227,6 +239,7 @@ public class BankGUI {
                 JOptionPane.showMessageDialog(frame, "Error");
             }
             updateAccountList(selectedPNo);
+            amountField.setText(" ");
         });
 
         //Stäng konto
@@ -287,7 +300,6 @@ public class BankGUI {
         List<String> accounts = bank.getCustomerAccounts(pNo);
 
         for (String a : accounts) {
-            System.out.println("KONTO: [" + a + "]");
             newModel.addElement(a);
         }
 
