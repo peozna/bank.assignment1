@@ -219,6 +219,7 @@ public class BankGUI {
                 amount = Integer.parseInt(amountField.getText());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "Enter valid number");
+                return;
             }
 
             if (selectedPNo == null) {
@@ -239,7 +240,7 @@ public class BankGUI {
                 JOptionPane.showMessageDialog(frame, "Error");
             }
             updateAccountList(selectedPNo);
-            amountField.setText(" ");
+            amountField.setText("");
         });
 
         //Stäng konto
@@ -321,6 +322,37 @@ public class BankGUI {
         JMenuItem save = new JMenuItem("Save Bank");
         JMenuItem load = new JMenuItem("Load Bank");
         JMenuItem saveTrans = new JMenuItem("Save transaction");
+
+        save.addActionListener(e -> {
+            if(bank.saveToFile()) {
+                JOptionPane.showMessageDialog(frame, "Saved!");
+            } else {
+                JOptionPane.showMessageDialog(frame, "Error saving file");
+            }
+        });
+
+        load.addActionListener(e -> {
+            if(bank.loadFromFile()) {
+                updateCustomerList();
+                accountModel.clear();
+                JOptionPane.showMessageDialog(frame, "Loaded!");
+            } else {
+                JOptionPane.showMessageDialog(frame, "Error loading file");
+            }
+        });
+
+        saveTrans.addActionListener (e -> {
+            if(selectedPNo == null || selectedAccountId == 0) {
+                JOptionPane.showMessageDialog(frame, "Select customer and account");
+                return;
+            }
+
+            if(bank.saveTransactionsToFile(selectedPNo, selectedAccountId)) {
+                JOptionPane.showMessageDialog(frame, "Transactions saved!");
+            } else {
+                JOptionPane.showMessageDialog(frame, "Error saving transactions");
+            }
+        });
 
         menu.add(save);
         menu.add(load);

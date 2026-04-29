@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Locale;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.io.IOException;
 
 /**
  * BankLogic.java
@@ -40,11 +46,12 @@ public class BankLogic {
     /**
      * Hämtar alla transaktioner för ett specifikt konto.
      *
-     * @param pNo kundens personnummer
+     * @param pNo       kundens personnummer
      * @param accountId kontonumret för kontot vars transaktioner ska hämtas.
      * @return en lista med kontots formaterade transaktioner, null om kunden inte finns eller kontot inte tillhör kunden.
      *
-     * */
+     *
+     */
     public List<String> getTransactions(String pNo, int accountId) {
         List<Account> accounts = customerAccounts.get(pNo);
 
@@ -61,25 +68,29 @@ public class BankLogic {
     /**
      * Metoden returnerar en lista med strängar som representeras bankens kunder.
      * Om inga kunder finns returneras en tom lista.
-     * */
+     *
+     */
     public List<String> getAllCustomers() {
-        List<String> customerString = new ArrayList<>();;
+        List<String> customerString = new ArrayList<>();
+        ;
         if (customers.isEmpty()) {
             return customerString;
         }
 
         for (Customer customer : customers) {
             String addCustomer = customer.getPNo() + " " +
-            customer.getName() + " " +
-            customer.getSurname();
+                    customer.getName() + " " +
+                    customer.getSurname();
 
             customerString.add(addCustomer);
         }
         return customerString;
     }
+
     /**
      * Metod för att skapa en ny kund.
-     * */
+     *
+     */
     public boolean createCustomer(String name, String surname, String pNo) {
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) return false;
@@ -94,21 +105,22 @@ public class BankLogic {
 
     /**
      * Hämtar information om en specifik kund och dens konto/n.
-     *
+     * <p>
      * Metoden söker efter kundens personnummer i benkens kundlista.
      * Om kunden hittas returneras en lista av strängar där:
      * Första elementet består av kundens personnummer och fullständiga namn.
      * Andra elementet innehåller information om kundens konto/n.
-     *
+     * <p>
      * Kontoinformation formateras med:
      * Saldo - valutaformat med svenska inställningar (NumberFormat.getCurrencyInstance)
      * Ränta - procentformat med max en decimal (NumberFormat.getPercentInstance)
-     *
+     * <p>
      * Om kunden inte finns returneras null.
      *
      * @param pNo personnummer på kunden som ska hämtas
      * @return Lista med kund och kontoinformation eller null om kunden inte finns.
-     * */
+     *
+     */
     public List<String> getCustomer(String pNo) {
         List<String> customerInfo = new ArrayList<>();
 
@@ -120,39 +132,41 @@ public class BankLogic {
                 //Hämtar kundens kontolista via pNo
                 List<Account> accounts = customerAccounts.get(pNo);
 
-                    //Saldo och ränta formatteras här
-                    for (Account account: accounts) {
-                        customerInfo.add(account.getAccountInfo());
-                    }
+                //Saldo och ränta formatteras här
+                for (Account account : accounts) {
+                    customerInfo.add(account.getAccountInfo());
+                }
                 return customerInfo;
             }
-        } return null;
+        }
+        return null;
     }
 
     /**
      * Ändrar namn på kunden med angivet personnummer
-     *
+     * <p>
      * Metoden hämtar kunden med det angivna personnummmret
      * Om för eller efternamn skickas in som tomma strängar så behålls det gamla värdet.
      * Returnerar endast true om minst ett av namnet har ändrats.
      *
-     * @param name Nytt förnamn på kunden, om tomt behålls det gamla namnet.
+     * @param name    Nytt förnamn på kunden, om tomt behålls det gamla namnet.
      * @param surname Nytt efternamn på kunden, om tomt behålls det gamla namnet.
-     * @param pNo Personnummer på kunden.
+     * @param pNo     Personnummer på kunden.
      * @return true Om minst ett av namnet ändrats, annars false.
-     * */
+     *
+     */
     public boolean changeCustomerName(String name, String surname, String pNo) {
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
                 //Flagga för att säkerställa att metoden endast returnerar true om ett av namnen ändrats.
                 boolean changed = false;
 
-                if(!name.isEmpty()) {
+                if (!name.isEmpty()) {
                     customer.setName(name);
                     changed = true;
                 }
 
-                if(!surname.isEmpty()) {
+                if (!surname.isEmpty()) {
                     customer.setSurname(surname);
                     changed = true;
                 }
@@ -164,25 +178,26 @@ public class BankLogic {
 
     /**
      * Skapar ett nytt sparkonto för kund med angivet personnummer.
-     *
+     * <p>
      * Metoden loopar genom listan med kunder. Om kunden finns:
-     *  - Skapas ett nytt sparkonto med unikt ID.
-     *  - Kontot läggs till i kundens lista med konton HashMap customerAccounts.
-     *  - Kontonummret returneras
-     *  Om kunden inte finns returneras -1.
+     * - Skapas ett nytt sparkonto med unikt ID.
+     * - Kontot läggs till i kundens lista med konton HashMap customerAccounts.
+     * - Kontonummret returneras
+     * Om kunden inte finns returneras -1.
      *
      * @param pNo Personnummer på kunden
      * @return KontoID för det nya sparkontot eller -1 om kunden inte finns.
-     * */
+     *
+     */
     public int createSavingsAccount(String pNo) {
-        for (Customer customer: customers) {
+        for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
                 Account savingsAccount = new SavingsAccount(nextAccountId);
-                nextAccountId ++;
+                nextAccountId++;
 
                 List<Account> accounts = customerAccounts.get(pNo);
                 //Om kunden inte har en kontolista så skapas en (ska normalt inte ske)
-                if(accounts == null) {
+                if (accounts == null) {
                     accounts = new ArrayList<>();
                     customerAccounts.put(pNo, accounts);
                 }
@@ -196,25 +211,26 @@ public class BankLogic {
 
     /**
      * Skapar ett nytt kreditkonto för kund med angivet personnummer.
-     *
+     * <p>
      * Metoden loopar genom listan med kunder. Om kunden finns:
-     *  - Skapas ett nytt kreditkonto med unikt ID.
-     *  - Kontot läggs till i kundens lista med konton HashMap customerAccounts.
-     *  - Kontonummret returneras
-     *  Om kunden inte finns returneras -1.
+     * - Skapas ett nytt kreditkonto med unikt ID.
+     * - Kontot läggs till i kundens lista med konton HashMap customerAccounts.
+     * - Kontonummret returneras
+     * Om kunden inte finns returneras -1.
      *
      * @param pNo Personnummer på kunden
      * @return KontoID för det nya kreditkontot eller -1 om kunden inte finns.
-     * */
+     *
+     */
     public int createCreditAccount(String pNo) {
-        for (Customer customer: customers) {
+        for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
                 Account creditAccount = new CreditAccount(nextAccountId);
-                nextAccountId ++;
+                nextAccountId++;
 
                 List<Account> accounts = customerAccounts.get(pNo);
                 //Om kunden inte har en kontolista så skapas en (ska normalt inte ske)
-                if(accounts == null) {
+                if (accounts == null) {
                     accounts = new ArrayList<>();
                     customerAccounts.put(pNo, accounts);
                 }
@@ -225,28 +241,30 @@ public class BankLogic {
         }
         return -1;
     }
+
     /**
      * Returnerar information om ett konto som tillhör en specifik kund.
-     *
+     * <p>
      * Metoden söker efter kontot med angivet accountId med kundens personnummer.
      * Om kunden och kontot hittas så returneras informationen som en sträng.
      *
-     * @param pNo kundens personnummer
+     * @param pNo       kundens personnummer
      * @param accountId kontonummer
      * @return Sträng med kontoinfo eller null om kontot eller kunden inte finns.
-     * */
+     *
+     */
     public String getAccount(String pNo, int accountId) {
-            //Förutsätter att kunden existerar och har en kontolista
-            //om kunends pNo inte finns så returneras null i slutet av metoden
-            List<Account> accounts = customerAccounts.get(pNo);
+        //Förutsätter att kunden existerar och har en kontolista
+        //om kunends pNo inte finns så returneras null i slutet av metoden
+        List<Account> accounts = customerAccounts.get(pNo);
 
-            if (accounts == null) return null;
+        if (accounts == null) return null;
 
-            for (Account account : accounts) {
-                if (account.getAccountId() == accountId) {
-                    return account.getAccountInfo();
-                }
+        for (Account account : accounts) {
+            if (account.getAccountId() == accountId) {
+                return account.getAccountInfo();
             }
+        }
         return null;
     }
 
@@ -263,17 +281,19 @@ public class BankLogic {
 
         return result;
     }
+
     /**
      * Sätter in ett belopp pengar på ett konto tillhörande en kund.
-     *
+     * <p>
      * Metoden letar upp kund som motsvarar pNo och konto som motsvarar accountId.
      * Endast belopp större än 0 och heltal accepteras.
      *
-     * @param pNo Kundens personnummer
+     * @param pNo       Kundens personnummer
      * @param accountId Kontonummer
-     * @param amount Beloppet som ska sättas in.
+     * @param amount    Beloppet som ska sättas in.
      * @return true om insättningen lyckades, annars false.
-     * */
+     *
+     */
     public boolean deposit(String pNo, int accountId, int amount) {
         List<Account> accounts = customerAccounts.get(pNo);
 
@@ -287,43 +307,47 @@ public class BankLogic {
         }
         return false;
     }
+
     /**
      * Gör ett uttag från en kunds konto.
-     *
+     * <p>
      * Metoden söker upp konto med accountId för kunden med pNo.
      * Uttaget genomförs endast om saldot täcker beloppet och beloppet är större än 0.
      * Beloppet anges i heltal.
      *
-     * @param pNo Kundens personnummer
+     * @param pNo       Kundens personnummer
      * @param accountId Kontonummer
-     * @param amount Beloppet som ska tas ut.
+     * @param amount    Beloppet som ska tas ut.
      * @return true om uttaget lyckades, annars false.
-     * */
+     *
+     */
     public boolean withdraw(String pNo, int accountId, int amount) {
         List<Account> accounts = customerAccounts.get(pNo);
 
         if (accounts == null) return false;
 
-            for (Account account : accounts) {
-                if (account.getAccountId() == accountId) {
-                    return account.withdraw(amount);
+        for (Account account : accounts) {
+            if (account.getAccountId() == accountId) {
+                return account.withdraw(amount);
             }
         }
-            return false;
+        return false;
     }
+
     /**
      * Avslutar ett konto och beräknar räntan.
-     *
+     * <p>
      * Metoden letar upp kontot med angivet accountId hos kunden pNo.
      * Om kontot hittas så beräknas räntan med getInterest() enligt formeln:
-     *      ränta = saldo * räntesats / 2
+     * ränta = saldo * räntesats / 2
      * Den returneras sen i en Sträng tillsammans med övrig kontoinfo.
      * Kontot tas sedan bort från listan.
      *
-     * @param pNo kundens personnummer.
+     * @param pNo       kundens personnummer.
      * @param accountId kontonummer.
      * @return en Sträng med ränta och kontoinfo, eller null om kontot inte kunde avslutas.
-     * */
+     *
+     */
     public String closeAccount(String pNo, int accountId) {
         List<Account> accounts = customerAccounts.get(pNo);
 
@@ -338,18 +362,20 @@ public class BankLogic {
         }
         return null;
     }
+
     /**
      * Tar bort en kund och dess konton.
-     *
+     * <p>
      * Metoden letar upp kunden med angivet pNo.
      * Om kunden hittas skapas en lista med information om kunden och dennes konto/n.
      * Kundinfo och kontoinfo sätts ihop till strängar som placeras i listan.
-     *
+     * <p>
      * Sedan tas kunden och alla tillhörande konton bort.
      *
      * @param pNo Kundens personnummer.
      * @return Lista med kund+kontoinformation eller null om kunden inte finns.
-     * */
+     *
+     */
     public List<String> deleteCustomer(String pNo) {
         for (Customer customer : customers) {
             if (customer.getPNo().equals(pNo)) {
@@ -370,5 +396,74 @@ public class BankLogic {
             }
         }
         return null;
+    }
+
+    public boolean saveToFile() {
+        try {
+            BankData data = new BankData();
+            data.customers = customers;
+            data.customerAccounts = customerAccounts;
+            data.nextAccountId = nextAccountId;
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+            Path path = Paths.get("data/nattrn2/bank.json");
+            Files.createDirectories(path.getParent());
+
+            String json = gson.toJson(data);
+            Files.writeString(path, json);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean loadFromFile() {
+        try {
+            Path path = Paths.get("data/nattrn2/bank.json");
+
+            if (!Files.exists(path)) return false;
+
+            String json = Files.readString(path);
+
+            Gson gson = new Gson();
+            BankData data = gson.fromJson(json, BankData.class);
+
+            customers.clear();
+            customerAccounts.clear();
+
+            customers = data.customers;
+            customerAccounts = data.customerAccounts;
+            nextAccountId = data.nextAccountId;
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean saveTransactionsToFile(String pNo, int accountId) {
+        try {
+            List<String> transactions = getTransactions(pNo, accountId);
+            if (transactions == null) return false;
+
+            Path path = Paths.get("data/nattrn2/transactions_" + accountId + ".txt");
+            Files.createDirectories(path.getParent());
+
+            List<String> output = new ArrayList<>();
+            output.add("Datum: " + java.time.LocalDate.now());
+            output.addAll(transactions);
+            output.add("Saldo: " + getAccount(pNo, accountId));
+
+            Files.write(path, output);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
